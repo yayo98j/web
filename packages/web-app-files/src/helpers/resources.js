@@ -8,6 +8,7 @@ import { bitmaskToRole, checkPermission, permissionsBitmask } from './collaborat
 import { shareTypes, userShareTypes } from './shareTypes'
 import { $gettext } from '../gettext'
 import { getAvatarSrc } from './user'
+import { getExtension } from 'web-pkg/src/utils/file'
 
 // Should we move this to ODS?
 export function getFileIcon(extension) {
@@ -20,17 +21,9 @@ export function getFileIcon(extension) {
   return 'file'
 }
 
-function _getFileExtension(name) {
-  const extension = path.extname(name)
-  if (!extension) {
-    return ''
-  }
-  return extension.replace(/^(.)/, '').toLowerCase()
-}
-
 export function buildResource(resource) {
   const isFolder = resource.type === 'dir'
-  const extension = _getFileExtension(resource.name)
+  const extension = getExtension(resource.name)
   return {
     id: resource.fileInfo['{http://owncloud.org/ns}fileid'],
     icon: isFolder ? 'folder' : getFileIcon(extension),
@@ -213,7 +206,7 @@ export function buildSharedResource(
     // permissions irrelevant here
     resource.isReceivedShare = () => false
   }
-  resource.extension = isFolder ? '' : _getFileExtension(resource.name)
+  resource.extension = isFolder ? '' : getExtension(resource.name)
   // FIXME: add actual permission parsing
   resource.canUpload = () => true
   resource.canBeDeleted = () => true
@@ -382,7 +375,7 @@ export function buildCollaboratorShare(s, file, allowSharePerm) {
 export function buildDeletedResource(resource) {
   const isFolder = resource.type === 'dir'
   const fullName = resource.fileInfo['{http://owncloud.org/ns}trashbin-original-filename']
-  const extension = isFolder ? '' : _getFileExtension(fullName)
+  const extension = isFolder ? '' : getExtension(fullName)
   return {
     type: isFolder ? 'folder' : resource.type,
     ddate: resource.fileInfo['{http://owncloud.org/ns}trashbin-delete-datetime'],

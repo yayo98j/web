@@ -45,13 +45,13 @@
           >
             <span id="files-list-count-folders" v-text="activeFilesCount.folders" />
             <translate :translate-n="activeFilesCount.folders" translate-plural="folders"
-              >folder</translate
-            >
+              >folder
+            </translate>
             <translate>and</translate>
             <span id="files-list-count-files" v-text="activeFilesCount.files" />
             <translate :translate-n="activeFilesCount.files" translate-plural="files"
-              >file</translate
-            >
+              >file
+            </translate>
             <template v-if="activeFiles.length > 0">
               &ndash; {{ getResourceSize(filesTotalSize) }}
             </template>
@@ -188,6 +188,8 @@ export default {
           this.davProperties
         )
 
+        await new Promise(resolve => setTimeout(() => resolve(), 1500))
+
         resources = resources.map(buildResource)
         this.LOAD_FILES({ currentFolder: resources[0], files: resources.slice(1) })
         this.loadIndicators({ client: this.$client, currentFolder: this.$route.params.item })
@@ -213,6 +215,8 @@ export default {
       this.adjustTableHeaderPosition()
       this.loading = false
       this.scrollToResourceFromRoute()
+
+      console.log(11111)
     },
 
     scrollToResourceFromRoute() {
