@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+
+  <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0">
+
+  <meta name="theme-color" content="#375f7E">
+
+  <meta http-equiv="x-ua-compatible" content="IE=edge">
+
+  <title>ownCloud</title>
+  <link rel="manifest" href="manifest.json">
+
+  <link href="css/web.css" rel="stylesheet">
+
+  <script src="js/require.js"></script>
+  <noscript>
+    <style>
+        #enable-js-banner {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            padding: 0.5rem;
+            background-color: #467391;
+        }
+        #banner-content {
+            color: white;
+        }
+    </style>
+  </noscript>
+</head>
+<body>
+<div id="owncloud"></div>
+<noscript>
+  <div id="enable-js-banner"><h3 id="banner-content">Please enable JavaScript</h3></div>
+</noscript>
+<script>
+    requirejs.config({
+        baseUrl: "js",
+    })
+
+    requirejs(['web-runtime'], function (runtime) {
+        runtime.exec()
+    })
+</script>
+</body>
+</html>
