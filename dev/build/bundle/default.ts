@@ -11,7 +11,6 @@ import {
   postcss,
   resolve,
   vue,
-  progress,
   gzip,
   visualizer,
   terser

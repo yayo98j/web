@@ -1,9 +1,6 @@
 import { Bundle, Builder } from '../typings'
 import { RollupWatcher, RollupWatchOptions, watch } from 'rollup'
 import { buildEvent, clearScreen } from '../utils'
-import { bold, cyan, green } from 'colorette'
-import ms from 'pretty-ms'
-import dateTime from 'date-and-time'
 import EventEmitter from 'events'
 
 export default class WatchBuilder extends EventEmitter implements Builder {

@@ -1,4 +1,4 @@
-import { InputOption, RollupOptions } from 'rollup'
+import { RollupOptions } from 'rollup'
 import EventEmitter from 'events'
 
 export type PipelineOptions = {
