@@ -13,6 +13,7 @@ import {
   vue,
   gzip,
   visualizer,
+  typescript,
   terser
 } from './plugins'
 import AbstractBundle from './abstract'
@@ -29,6 +30,7 @@ export default class DefaultBundle extends AbstractBundle implements Bundle {
       commonjs(),
       babel(),
       modify(),
+      typescript(),
       globals(),
       json()
     ]
