@@ -261,7 +261,7 @@ const routes = [
 // If we do not define these constants, the export will be undefined
 const translations = translationsJson
 const quickActions = quickActionsImport
-console.log(111)
+
 export default {
   appInfo,
   store,
