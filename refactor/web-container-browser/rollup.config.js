@@ -25,7 +25,7 @@ export const configuration = {
       dir: __distFolder,
       format: 'system',
       freeze: true,
-      sourcemap: true,
+      sourcemap: !production,
       chunkFileNames: '_chunks/[name]-[hash].js'
     }
   ],

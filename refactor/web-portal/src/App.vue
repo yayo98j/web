@@ -1,7 +1,5 @@
 <template>
-  <div id="web">
-    IMPLEMENT ME
-  </div>
+  <div id="web">LAZY LOADED, look into the console and network console</div>
 </template>
 
 <script>

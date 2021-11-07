@@ -25,7 +25,8 @@ const baseConfiguration = {
       dir: __distFolder,
       format: 'amd',
       freeze: true,
-      sourcemap: true
+      sourcemap: !production,
+      chunkFileNames: '_chunks/[name]-[hash].js'
     }
   ],
   external: ['tus-js-client'],
@@ -34,25 +35,37 @@ const baseConfiguration = {
       targets: [
         { src: path.join(__root, 'static/*'), dest: __distFolder },
         {
-          src: path.join(path.dirname(require.resolve('axios')), 'dist/axios.min.*'),
+          src: path.join(
+            path.dirname(require.resolve('axios')),
+            production ? 'dist/axios.min.js' : 'dist/axios.min.*'
+          ),
           dest: __distFolder
         },
         {
-          src: path.join(path.dirname(require.resolve('systemjs')), 'system.min.*'),
+          src: path.join(
+            path.dirname(require.resolve('systemjs')),
+            production ? 'system.min.js' : 'system.min.*'
+          ),
           dest: __distFolder
         },
         {
-          src: path.join(path.dirname(require.resolve('systemjs')), 'extras/*.min.*'),
+          src: path.join(
+            path.dirname(require.resolve('systemjs')),
+            production ? 'extras/*.min.js' : 'extras/*.min.*'
+          ),
           dest: path.join(__distFolder, 'system-extras')
         },
         {
-          src: path.join(path.dirname(require.resolve('tus-js-client')), '../dist/tus.min.js*'),
+          src: path.join(
+            path.dirname(require.resolve('tus-js-client')),
+            production ? '../dist/tus.min.js' : '../dist/tus.min.js*'
+          ),
           dest: __distFolder
         },
         {
           src: path.join(
             path.dirname(require.resolve('import-map-overrides')),
-            'import-map-overrides.*'
+            production ? 'import-map-overrides.js' : 'import-map-overrides.*'
           ),
           dest: __distFolder
         }
