@@ -1,14 +1,43 @@
 import Koa from 'koa'
 import Router from 'koa-router'
 import koaSend from 'koa-send'
-import {join} from 'path'
+import {extname, join} from 'path'
 
 const server = new Koa()
 const router = new Router()
 
-router.get('/(.*)', async (ctx, next) => {
-  await koaSend(ctx, join('dist', ctx.url === '/' ? 'index.html' : ctx.url))
-  await next()
+router.get('/:folderOrFile?', async (ctx, next) => {
+  const {folderOrFile = ''} = ctx.params
+
+  try {
+    await koaSend(ctx, join('refactor', 'web-container-browser', 'dist', extname(folderOrFile) ? folderOrFile : 'index.html'))
+  } catch (e) {
+    await next()
+  }
+
+})
+
+router.get('/:folder/:path*', async (ctx, next) => {
+  const {folder, path} = ctx.params
+
+  try {
+    await koaSend(ctx, join('refactor', folder, 'dist', path))
+  } catch {
+    // ok to fail, waterfall goes down to web-portal as a fallback
+  }
+
+  try {
+    await koaSend(
+      ctx,
+      join(
+        'packages', 'web-portal', 'dist',
+        extname(path) ? join(folder, path) : 'index.html'
+      )
+    )
+  } catch (e) {
+    await next()
+  }
+
 })
 
 server.use(router.routes())
@@ -26,4 +55,5 @@ server.use(async (ctx, next) => {
   ctx.set('X-Response-Time', `${ms}ms`);
 })
 
-server.listen(8080, () => {})
+server.listen(8080, () => {
+})

@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "@ownclouders/web-portal": "/web-portal/index.js"
+  }
+}

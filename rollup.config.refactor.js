@@ -1,4 +1,5 @@
-import { build as buildWebDependencies } from './refactor/web-dependencies/rollup.config.js'
-import { build as buildWebPortal } from './refactor/web-portal/rollup.config.js'
+import { configuration as dependencies } from './refactor/web-dependencies/rollup.config.js'
+import { configuration as containerBrowser } from './refactor/web-container-browser/rollup.config.js'
+import { configuration as portal } from './refactor/web-portal/rollup.config.js'
 
-export default [buildWebPortal('./dist/'), ...buildWebDependencies('./dist/web-dependencies')]
+export default [...dependencies, containerBrowser, portal]

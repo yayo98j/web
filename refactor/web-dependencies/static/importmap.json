@@ -1,6 +1,6 @@
 {
   "imports": {
-    "tus-js-client": "./tus.min.js",
-    "vue": "./vue.min.js"
+    "tus-js-client": "/web-dependencies/tus.min.js",
+    "vue": "/web-dependencies/web-custom-vue.js"
   }
 }

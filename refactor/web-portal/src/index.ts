@@ -1,7 +1,10 @@
 import Vue from 'vue'
-import App from './App.vue'
 
-new Vue({
-  el: '#portal',
-  render: (h) => h(App),
-})
+export const run = async (): Promise<void> => {
+  const { sayAndComponent } = await import('./lazy')
+
+  new Vue({
+    el: '#portal',
+    render: (h) => sayAndComponent('WOOP', h)
+  })
+}
