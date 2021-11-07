@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='initial-scale=1.0, minimum-scale=1.0'>
+  <meta http-equiv='x-ua-compatible' content='IE=edge'>
+  <meta name="importmap-type" content="systemjs-importmap"/>
+  <script src="./web-dependencies/importmap.json" type="systemjs-importmap"></script>
+  <script src="./web-dependencies/systemjs/system.min.js"></script>
+  <script src="./web-dependencies/systemjs/extras/dynamic-import-maps.min.js"></script>
+  <script src="./web-dependencies/systemjs/extras/amd.min.js"></script>
+  <script src="./web-dependencies/systemjs/extras/named-exports.min.js"></script>
+  <script src="./web-dependencies/systemjs/extras/named-register.min.js"></script>
+  <script src="./web-dependencies/import-map-overrides.js"></script>
+  <title>OcOs - Web</title>
+</head>
+<body>
+
+<main id="portal"></main>
+
+<script src="index.js"></script>
+
+<import-map-overrides-full></import-map-overrides-full>
+
+<noscript>
+  <div id='enable-js-banner'><h3 id='banner-content'>Please enable JavaScript</h3></div>
+</noscript>
+</body>
+</html>

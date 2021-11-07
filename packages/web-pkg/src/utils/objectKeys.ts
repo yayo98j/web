@@ -1,7 +1,7 @@
 import isPlainObject from 'lodash-es/isPlainObject'
 
 export const objectKeys = (obj: Record<string, unknown>): string[] => {
-  const paths = []
+  const paths: string[] = []
 
   const walk = (o, p = '') =>
     Object.keys(o).forEach((key) => {
