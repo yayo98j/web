@@ -1109,7 +1109,6 @@ def acceptance(ctx):
         "runningOnOCIS": False,
         "screenShots": False,
         "visualTesting": False,
-        "openIdConnect": False,
         "oc10IntegrationAppIncluded": False,
         "skip": False,
         "debugSuites": [],
@@ -1215,14 +1214,9 @@ def acceptance(ctx):
                             if params["notificationsAppNeeded"]:
                                 steps += setupNotificationsAppForServer()
 
-                            if (params["openIdConnect"]):
-                                ## Configure oc10 and web with openidConnect login
-                                steps += setupGraphapiOIdC() + buildGlauth() + buildIdP() + buildOcisWeb()
-                                steps += idpService() + ocisWebService() + glauthService()
-                            else:
-                                ## Configure oc10 and web with oauth2 and web Service
-                                steps += setUpOauth2(params["oc10IntegrationAppIncluded"])
-                                services += webService()
+                            ## Configure oc10 and web with oauth2 and web Service
+                            steps += setUpOauth2(params["oc10IntegrationAppIncluded"])
+                            services += webService()
 
                             steps += fixPermissions()
 
@@ -1240,16 +1234,7 @@ def acceptance(ctx):
                         steps += copyFilesForUpload()
 
                         # run the acceptance tests
-                        steps += runWebuiAcceptanceTests(ctx, suite, alternateSuiteName, params["filterTags"], params["extraEnvironment"], browser, params["visualTesting"], params["screenShots"])
-
-                        # capture the screenshots from visual regression testing (only runs on failure)
-                        if (params["visualTesting"]):
-                            steps += listScreenShots() + uploadVisualDiff() + uploadVisualScreenShots()
-                            steps += buildGithubCommentVisualDiff(ctx, suiteName, params["runningOnOCIS"])
-
-                        # Capture the screenshots from acceptance tests (only runs on failure)
-                        if (isLocalBrowser(browser) and params["screenShots"]):
-                            steps += uploadScreenshots() + buildGithubComment(suiteName)
+                        steps += runWebuiAcceptanceTests(ctx, suite, alternateSuiteName, params["filterTags"], params["extraEnvironment"], browser)
 
                         if (params["earlyFail"]):
                             steps += buildGithubCommentForBuildStopped(suiteName)
@@ -1880,124 +1865,6 @@ def setUpOauth2(forIntegrationApp):
         ],
     }]
 
-def setupGraphapiOIdC():
-    return [{
-        "name": "setup-graphapi",
-        "image": OC_CI_PHP,
-        "commands": [
-            "git clone -b master https://github.com/owncloud/graphapi.git %s/apps/graphapi" % dir["server"],
-            "cd %s/apps/graphapi || exit" % dir["server"],
-            "make vendor",
-            "git clone -b master https://github.com/owncloud/openidconnect.git %s/apps/openidconnect" % dir["server"],
-            "cd %s/apps/openidconnect || exit" % dir["server"],
-            "make vendor",
-            "cd %s || exit" % dir["server"],
-            "php occ a:e graphapi",
-            "php occ a:e openidconnect",
-            "php occ config:system:set trusted_domains 2 --value=web",
-            "php occ config:system:set openid-connect provider-url --value='https://idp:9130'",
-            "php occ config:system:set openid-connect loginButtonName --value=OpenId-Connect",
-            "php occ config:system:set openid-connect client-id --value=web",
-            "php occ config:system:set openid-connect insecure --value=true --type=bool",
-            "php occ config:system:set cors.allowed-domains 0 --value='http://web'",
-            "php occ config:system:set memcache.local --value='\\\\OC\\\\Memcache\\\\APCu'",
-            "php occ config:system:set web.baseUrl --value='http://web'",
-            "php occ config:list",
-        ],
-    }]
-
-def buildGlauth():
-    return [{
-        "name": "build-glauth",
-        "image": OC_CI_GOLANG,
-        "commands": [
-            "cd /srv/app/src/github.com/owncloud/ocis/glauth || exit",
-            "make build",
-            "cp bin/glauth %s" % dir["base"],
-        ],
-        "volumes": [{
-            "name": "gopath",
-            "path": "/srv/app",
-        }, {
-            "name": "configs",
-            "path": "/srv/config",
-        }],
-    }]
-
-def glauthService():
-    return [{
-        "name": "glauth",
-        "image": OC_CI_GOLANG,
-        "detach": True,
-        "environment": {
-            "GLAUTH_BACKEND_DATASTORE": "owncloud",
-            "GLAUTH_BACKEND_BASEDN": "dc=example,dc=com",
-        },
-        "commands": [
-            "cd %s" % dir["base"],
-            "./glauth --log-level debug server --backend-server http://owncloud/",
-        ],
-        "volumes": [{
-            "name": "gopath",
-            "path": "/srv/app",
-        }, {
-            "name": "configs",
-            "path": "/srv/config",
-        }],
-    }]
-
-def buildIdP():
-    return [{
-        "name": "build-idp",
-        "image": OC_CI_GOLANG,
-        "commands": [
-            "cd /srv/app/src/github.com/owncloud/ocis || exit",
-            "cd idp || exit",
-            "make build",
-            "cp bin/idp %s" % dir["base"],
-        ],
-        "volumes": [{
-            "name": "gopath",
-            "path": "/srv/app",
-        }, {
-            "name": "configs",
-            "path": "/srv/config",
-        }],
-    }]
-
-def idpService():
-    return [{
-        "name": "idp",
-        "image": OC_CI_GOLANG,
-        "detach": True,
-        "environment": {
-            "LDAP_BASEDN": "dc=example,dc=com",
-            "LDAP_BINDDN": "cn=admin,ou=users,dc=example,dc=com",
-            "LDAP_URI": "ldap://glauth:9125",
-            "IDP_IDENTIFIER_REGISTRATION_CONF": "/srv/config/drone/identifier-registration-oc10.yml",
-            "IDP_ISS": "https://idp:9130",
-            "LDAP_BINDPW": "admin",
-            "LDAP_SCOPE": "sub",
-            "LDAP_LOGIN_ATTRIBUTE": "uid",
-            "LDAP_EMAIL_ATTRIBUTE": "mail",
-            "LDAP_NAME_ATTRIBUTE": "givenName",
-            "LDAP_UUID_ATTRIBUTE": "uid",
-            "LDAP_UUID_ATTRIBUTE_TYPE": "text",
-            "LDAP_FILTER": "(objectClass=posixaccount)",
-        },
-        "commands": [
-            "cd %s" % dir["base"],
-            "./idp  --log-level debug server --signing-kid gen1-2020-02-27",
-        ],
-        "volumes": [{
-            "name": "gopath",
-            "path": "/srv/app",
-        }, {
-            "name": "configs",
-            "path": "/srv/config",
-        }],
-    }]
-
 def ocisService():
     return [{
         "name": "ocis",
@@ -2025,48 +1892,6 @@ def ocisService():
             "mkdir -p /srv/app/tmp/ocis/owncloud/data/",
             "mkdir -p /srv/app/tmp/ocis/storage/users/",
             "./ocis server",
-        ],
-        "volumes": [{
-            "name": "gopath",
-            "path": "/srv/app",
-        }, {
-            "name": "configs",
-            "path": "/srv/config",
-        }],
-    }]
-
-def buildOcisWeb():
-    return [{
-        "name": "build-ocis-web",
-        "image": OC_CI_GOLANG,
-        "commands": [
-            "cd /srv/app/src/github.com/owncloud/ocis || exit",
-            "cd web || exit",
-            "make build",
-            "cp bin/web %s/ocis-web" % dir["base"],
-        ],
-        "volumes": [{
-            "name": "gopath",
-            "path": "/srv/app",
-        }, {
-            "name": "configs",
-            "path": "/srv/config",
-        }],
-    }]
-
-# Ocis-web service just for the oc10 tests
-def ocisWebService():
-    return [{
-        "name": "web",
-        "image": OC_CI_GOLANG,
-        "detach": True,
-        "environment": {
-            "WEB_UI_CONFIG": "/srv/config/drone/config-oc10-openid.json",
-            "WEB_ASSET_PATH": "%s/dist" % dir["web"],
-        },
-        "commands": [
-            "cd %s" % dir["base"],
-            "./ocis-web --log-level debug server",
         ],
         "volumes": [{
             "name": "gopath",
@@ -2193,7 +2018,7 @@ def copyFilesForUpload():
         ],
     }]
 
-def runWebuiAcceptanceTests(ctx, suite, alternateSuiteName, filterTags, extraEnvironment, browser, visualTesting, screenShots):
+def runWebuiAcceptanceTests(ctx, suite, alternateSuiteName, filterTags, extraEnvironment, browser):
     environment = {}
     if (filterTags != ""):
         environment["TEST_TAGS"] = filterTags
@@ -2220,10 +2045,6 @@ def runWebuiAcceptanceTests(ctx, suite, alternateSuiteName, filterTags, extraEnv
 
     if ctx.build.event == "cron":
         environment["RERUN_FAILED_WEBUI_SCENARIOS"] = "false"
-    if (visualTesting):
-        environment["VISUAL_TEST"] = "true"
-    if (screenShots):
-        environment["SCREENSHOTS"] = "true"
     environment["SERVER_HOST"] = "http://web"
     environment["BACKEND_HOST"] = "http://owncloud"
     environment["COMMENTS_FILE"] = "/var/www/owncloud/web/comments.file"
@@ -2388,187 +2209,6 @@ def stopBuild():
         "commands": [
             "drone build stop owncloud/web ${DRONE_BUILD_NUMBER}",
         ],
-        "when": {
-            "status": [
-                "failure",
-            ],
-            "event": [
-                "pull_request",
-            ],
-        },
-    }]
-
-def uploadScreenshots():
-    return [{
-        "name": "upload-screenshots",
-        "image": "plugins/s3",
-        "pull": "if-not-exists",
-        "settings": {
-            "bucket": "owncloud",
-            "endpoint": {
-                "from_secret": "cache_s3_endpoint",
-            },
-            "path_style": True,
-            "source": "%s/tests/reports/screenshots/**/*" % dir["web"],
-            "strip_prefix": "%s/tests/reports/screenshots" % dir["web"],
-            "target": "/web/screenshots/${DRONE_BUILD_NUMBER}",
-        },
-        "environment": {
-            "AWS_ACCESS_KEY_ID": {
-                "from_secret": "cache_s3_access_key",
-            },
-            "AWS_SECRET_ACCESS_KEY": {
-                "from_secret": "cache_s3_secret_key",
-            },
-        },
-        "when": {
-            "status": [
-                "failure",
-            ],
-            "event": [
-                "pull_request",
-            ],
-        },
-    }]
-
-def listScreenShots():
-    return [{
-        "name": "list screenshots-visual",
-        "image": OC_CI_NODEJS,
-        "commands": [
-            "ls -laR %s/tests/vrt" % dir["web"],
-        ],
-        "when": {
-            "status": [
-                "failure",
-            ],
-        },
-    }]
-
-def uploadVisualDiff():
-    return [{
-        "name": "upload-diff-screenshots",
-        "image": "plugins/s3",
-        "pull": "if-not-exists",
-        "settings": {
-            "bucket": "owncloud",
-            "endpoint": {
-                "from_secret": "cache_s3_endpoint",
-            },
-            "path_style": True,
-            "source": "%s/tests/vrt/diff/**/*" % dir["web"],
-            "strip_prefix": "%s/tests/vrt" % dir["web"],
-            "target": "/web/screenshots/${DRONE_BUILD_NUMBER}",
-        },
-        "environment": {
-            "AWS_ACCESS_KEY_ID": {
-                "from_secret": "cache_s3_access_key",
-            },
-            "AWS_SECRET_ACCESS_KEY": {
-                "from_secret": "cache_s3_secret_key",
-            },
-        },
-        "when": {
-            "status": [
-                "failure",
-            ],
-            "event": [
-                "pull_request",
-            ],
-        },
-    }]
-
-def uploadVisualScreenShots():
-    return [{
-        "name": "upload-latest-screenshots",
-        "image": "plugins/s3",
-        "pull": "if-not-exists",
-        "settings": {
-            "bucket": "owncloud",
-            "endpoint": {
-                "from_secret": "cache_s3_endpoint",
-            },
-            "path_style": True,
-            "source": "%s/tests/vrt/latest/**/*" % dir["web"],
-            "strip_prefix": "%s/tests/vrt" % dir["web"],
-            "target": "/web/screenshots/${DRONE_BUILD_NUMBER}",
-        },
-        "environment": {
-            "AWS_ACCESS_KEY_ID": {
-                "from_secret": "cache_s3_access_key",
-            },
-            "AWS_SECRET_ACCESS_KEY": {
-                "from_secret": "cache_s3_secret_key",
-            },
-        },
-        "when": {
-            "status": [
-                "failure",
-            ],
-            "event": [
-                "pull_request",
-            ],
-        },
-    }]
-
-def buildGithubCommentVisualDiff(ctx, suite, runningOnOCIS):
-    backend = "ocis" if runningOnOCIS else "oc10"
-    branch = ctx.build.source if ctx.build.event == "pull_request" else "master"
-    return [{
-        "name": "build-github-comment-vrt",
-        "image": "owncloud/ubuntu:20.04",
-        "commands": [
-            "cd %s/tests/vrt" % dir["web"],
-            "if [ ! -d diff ]; then exit 0; fi",
-            "cd diff",
-            "if [ ! -d %s ]; then exit 0; fi" % backend,
-            "cd %s" % backend,
-            "ls -la",
-            'echo "<details><summary>:boom: Visual regression tests failed. Please find the screenshots inside ...</summary>\\n\\n<p>\\n\\n" >> %s/comments.file' % dir["web"],
-            'echo "Diff Image: </br>" >> %s/comments.file' % dir["web"],
-            'for f in *.png; do echo \'!\'"[$f]($CACHE_ENDPOINT/owncloud/web/screenshots/${DRONE_BUILD_NUMBER}/diff/%s/$f)" >> %s/comments.file; done' % (backend, dir["web"]),
-            "cd ../../latest",
-            "cd %s" % backend,
-            'echo "Actual Image: </br>" >> %s/comments.file' % dir["web"],
-            'for f in *.png; do echo \'!\'"[$f]($CACHE_ENDPOINT/owncloud/web/screenshots/${DRONE_BUILD_NUMBER}/latest/%s/$f)" >> %s/comments.file; done' % (backend, dir["web"]),
-            'echo "Comparing Against: </br>" >> %s/comments.file' % dir["web"],
-            'for f in *.png; do echo \'!\'"[$f](https://raw.githubusercontent.com/owncloud/web/%s/tests/vrt/baseline/%s/$f)" >> %s/comments.file; done' % (branch, backend, dir["web"]),
-            'echo "\n</p></details>" >> %s/comments.file' % dir["web"],
-            "more %s/comments.file" % dir["web"],
-        ],
-        "environment": {
-            "TEST_CONTEXT": suite,
-            "CACHE_ENDPOINT": {
-                "from_secret": "cache_s3_endpoint",
-            },
-        },
-        "when": {
-            "status": [
-                "failure",
-            ],
-            "event": [
-                "pull_request",
-            ],
-        },
-    }]
-
-def buildGithubComment(suite):
-    return [{
-        "name": "build-github-comment",
-        "image": "owncloud/ubuntu:20.04",
-        "commands": [
-            "cd %s/tests/reports/screenshots/" % dir["web"],
-            'echo "<details><summary>:boom: The acceptance tests failed. Please find the screenshots inside ...</summary>\\n\\n<p>\\n\\n" >> %s/comments.file' % dir["web"],
-            'for f in *.png; do echo "### $f\n" \'!\'"[$f]($CACHE_ENDPOINT/owncloud/web/screenshots/${DRONE_BUILD_NUMBER}/$f) \n" >> %s/comments.file; done' % dir["web"],
-            'echo "\n</p></details>" >> %s/comments.file' % dir["web"],
-            "more %s/comments.file" % dir["web"],
-        ],
-        "environment": {
-            "TEST_CONTEXT": suite,
-            "CACHE_ENDPOINT": {
-                "from_secret": "cache_s3_endpoint",
-            },
-        },
         "when": {
             "status": [
                 "failure",
