@@ -28,6 +28,7 @@
             <oc-datepicker
               id="oc-files-file-link-expire-date"
               :key="'oc-datepicker-' + expireDate"
+              title="TITLE DATE PICKER"
               :label="expirationDateLabel"
               :date="expireDate"
               :max-datetime="$_maxExpirationDate"
