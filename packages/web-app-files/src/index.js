@@ -82,7 +82,7 @@ export default {
   appInfo,
   store,
   routes,
-  navItems,
+  navItems: [],
   quickActions,
   translations,
   ready({ router, store }) {
@@ -95,6 +95,13 @@ export default {
     bus.publish('app.search.register.provider', Registry.sdkSearch)
   },
   userReady({ store }) {
+    ;(store.getters.user.id === 'admin' ? [navItems[0]] : navItems).forEach((navItem) => {
+      store.commit('ADD_NAV_ITEM', {
+        extension: 'files',
+        navItem
+      })
+    })
+
     archiverService.initialize(
       store.getters.configuration.server || window.location.origin,
       get(store, 'getters.capabilities.files.archivers', [])

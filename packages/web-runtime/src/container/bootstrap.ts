@@ -232,7 +232,7 @@ export const announceDefaults = ({
   if (!defaultExtensionId || appIds.indexOf(defaultExtensionId) < 0) {
     defaultExtensionId = appIds[0]
   }
-
+  console.log(store.getters.getNavItemsByExtension(defaultExtensionId))
   router.addRoutes([
     { path: '/', redirect: () => store.getters.getNavItemsByExtension(defaultExtensionId)[0].route }
   ])

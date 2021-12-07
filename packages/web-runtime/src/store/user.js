@@ -128,7 +128,7 @@ const actions = {
       }
 
       await context.dispatch('loadCapabilities', { token })
-      context.commit('SET_USER_READY', true)
+      context.state.id && context.commit('SET_USER_READY', true)
     }
     // if called from login, use available vue-authenticate instance; else re-init
     if (!vueAuthInstance) {
