@@ -17,6 +17,8 @@ export class SharedWithMePage {
   async acceptShare({ name }: { name: string }): Promise<void> {
     const { page } = this.actor
 
+    await page.pause()
+
     await page
       .locator(
         `//*[@data-test-resource-name="${name}"]/ancestor::tr//button[contains(@class, "file-row-share-status-accept")]`

@@ -134,8 +134,6 @@ Given(
 When(
   '{string} accepts the following resource(s)',
   async function (this: World, stepUser: string, stepTable: DataTable) {
-    // Todo: implement explicit step definition for *.navigate()
-
     const actor = this.actorsEnvironment.getActor({ id: stepUser })
     const { sharedWithMe: sharedWithMePage } = new FilesPage({ actor })
     const shares = stepTable.raw().map((f) => f[0])
