@@ -31,7 +31,7 @@
             appearance="raw"
           >
             <avatar-image :width="32" :userid="userId" :user-name="user.displayname" />
-            <span class="profile-info-wrapper" :class="{ 'oc-py-xs': !user.email }">
+            <span class="profile-info-wrapper oc-text-truncate" :class="{ 'oc-py-xs': !user.email }">
               <span v-text="user.displayname" />
               <br v-if="user.email" />
               <span v-if="user.email" class="oc-text-small" v-text="user.email" />
