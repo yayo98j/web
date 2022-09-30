@@ -86,3 +86,5 @@ Feature: File Upload
     And the user uploads a created file "0" using the webUI
     Then file "0" should be listed on the webUI
     And as "Alice" the content of "simple-folder/0" in the server should be the same as the content of local file "0"
+
+#    This is to debug the upload fail.
