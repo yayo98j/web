@@ -25,12 +25,13 @@ export class Groups {
   getDisplayedGroups(): Promise<string[]> {
     return getDisplayedGroups({ page: this.#page })
   }
-  async selectGroup({ key }: { key: string }): Promise<void> {
+  async selectGroup({ key }: { key: string }): Promise<string> {
     const { uuid } = this.#usersEnvironment.getGroup({ key })
     await selectGroup({ uuid, page: this.#page })
+    return uuid
   }
-  async deleteGroupUsingBatchAction(): Promise<void> {
-    await deleteGrouprUsingBatchAction({ page: this.#page })
+  async deleteGroupUsingBatchAction({ key }: { key: string[] }): Promise<void> {
+    await deleteGrouprUsingBatchAction({ page: this.#page, uuidArray: key })
   }
   async deleteGroupUsingContextMenu({ key }: { key: string }): Promise<void> {
     const { uuid } = this.#usersEnvironment.getGroup({ key })

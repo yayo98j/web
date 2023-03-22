@@ -68,14 +68,34 @@ export const deleteGroupUsingContextMenu = async (args: {
   ])
 }
 
-export const deleteGrouprUsingBatchAction = async (args: { page: Page }): Promise<void> => {
-  const { page } = args
+export const deleteGrouprUsingBatchAction = async (args: { page: Page, uuidArray: string[] }): Promise<void> => {
+  const { page, uuidArray } = args
   await page.locator(deleteBtnBatchAction).click()
 
+  for (var uuid of uuidArray) {
+    await Promise.all([
+      page.waitForResponse(
+        (resp) =>
+          resp.url().endsWith(encodeURIComponent(uuid)) &&
+          resp.status() === 204 &&
+          resp.request().method() === 'DELETE'
+      ),
+      // but we should press button only one time
+      await page.locator(actionConfirmButton).click()
+    ])
+  }
+  
+  // we don't know count of the responses
   await Promise.all([
     page.waitForResponse(
       (resp) =>
-        resp.url().includes('groups') &&
+        resp.url().endsWith(encodeURIComponent(uuidArray[0])) &&
+        resp.status() === 204 &&
+        resp.request().method() === 'DELETE'
+    ),
+    page.waitForResponse(
+      (resp) =>
+        resp.url().endsWith(encodeURIComponent(uuidArray[1])) &&
         resp.status() === 204 &&
         resp.request().method() === 'DELETE'
     ),

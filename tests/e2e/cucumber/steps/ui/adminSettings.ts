@@ -465,10 +465,11 @@ When(
 
     switch (actionType) {
       case 'batch actions':
+        let uuidArray = []
         for (const { group } of stepTable.hashes()) {
-          await groupsObject.selectGroup({ key: group })
+          uuidArray.push(await groupsObject.selectGroup({ key: group }))
         }
-        await groupsObject.deleteGroupUsingBatchAction()
+        await groupsObject.deleteGroupUsingBatchAction({ key: uuidArray})
         break
       case 'context menu':
         for (const { group } of stepTable.hashes()) {
