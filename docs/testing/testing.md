@@ -220,3 +220,28 @@ To see all available options run
 ```bash
 node tests/e2e/cucumber/report --help
 ```
+
+### using test manager Testomat
+
+Testomat is a test manager in which all automated tests are kept and tracks. 
+
+Each test must have a tag so that testomat can identify the test, so for:
+
+Creating a new tags and importing a new tests to ```Testomat``` by running the command: 
+
+```shell
+$ make update ids
+```
+
+Deleting all tags by running the command: 
+
+```shell
+$ make purge ids
+```
+
+Creating a report in the ```Testomat``` by running the command ```pnpm test:e2e:cucumber:sendreport```
+example: 
+
+```shell
+$ OCIS=true pnpm test:e2e:cucumber:sendreport 'tests/e2e/cucumber/**/*[!.oc10].feature'
+```
