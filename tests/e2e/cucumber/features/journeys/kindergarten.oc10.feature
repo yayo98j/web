@@ -1,3 +1,5 @@
+
+@S18cfd1b0
 Feature: Kindergarten can use web to organize a day
 
   As a kindergarten operator named Alice
@@ -13,6 +15,9 @@ Feature: Kindergarten can use web to organize a day
     And "admin" sets the default folder for received shares to "Shares"
     And "Admin" disables share auto accepting
 
+
+
+  @T9afbcbf6
   Scenario: Alice can share this weeks meal plan with all parents
     When "Alice" logs in
     And "Alice" opens the "files" app

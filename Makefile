@@ -66,3 +66,11 @@ l10n-read: node_modules
 .PHONY: l10n-write
 l10n-write: node_modules
 	make -C packages/web-runtime/l10n translations
+
+.PHONY: update ids
+update:
+	TESTOMATIO=gad79c0dcict npx check-cucumber@latest "**/*.feature" --dir tests/e2e/cucumber/  --update-ids --keep-structure --no-detached
+
+.PHONY: purge old ids
+purge:
+	TESTOMATIO=gad79c0dcict npx check-cucumber@latest "**/*.feature" --dir tests/e2e/cucumber/  --purge

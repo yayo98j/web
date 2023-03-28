@@ -1,9 +1,14 @@
+
+@S7ed8b416
 Feature: share
 
   Background:
     Given "admin" sets the default folder for received shares to "Shares"
     And "Admin" disables share auto accepting
 
+
+
+  @T314a9a18
   Scenario: folder
     Given "Admin" creates following users using API
       | id    |
@@ -72,6 +77,9 @@ Feature: share
     #  | Shares/folder_to_shared |
     And "Brian" logs out
 
+
+
+  @T4cbdd066
   Scenario: file
     Given "Admin" creates following users using API
       | id    |

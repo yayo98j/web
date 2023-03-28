@@ -1,8 +1,13 @@
+
+@S6d83601d
 Feature: Copy
   As a user
   I want to copy/move
   So that I can work safely on a copy or move resource to different location
 
+
+
+  @Ta4ae2262
   Scenario: Copy and move resources in personal space
     Given "Admin" creates following user using API
       | id    |

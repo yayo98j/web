@@ -1,5 +1,10 @@
+
+@Sbd7595bb
 Feature: groups management
 
+
+
+  @Tfd3d587c
   Scenario: admin creates group
     When "Admin" logs in
     And "Admin" opens the "admin-settings" app
@@ -15,6 +20,9 @@ Feature: groups management
     And "Admin" logs out
 
 
+
+
+  @Tcafb2b8e
   Scenario: admin deletes group
     Given "Admin" creates following groups using API
       | id       |

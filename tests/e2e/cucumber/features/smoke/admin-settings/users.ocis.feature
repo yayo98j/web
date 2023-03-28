@@ -1,5 +1,10 @@
+
+@S5b6ae1c6
 Feature: users management
 
+
+
+  @T69ba2715
   Scenario: user login can be managed in the admin settings
     Given "Admin" creates following user using API
       | id    |
@@ -19,6 +24,9 @@ Feature: users management
     And "Alice" logs out
 
 
+
+
+  @Ta2e22946
   Scenario: admin user can change personal quotas for users
     Given "Admin" creates following users using API
       | id    |
@@ -42,6 +50,9 @@ Feature: users management
     And "Admin" logs out
 
 
+
+
+  @T5a850deb
   Scenario: user group assignments can be handled via batch actions
     Given "Admin" creates following users using API
       | id    |
@@ -83,6 +94,9 @@ Feature: users management
     And "Admin" logs out
 
 
+
+
+  @T1dc0f7c1
   Scenario: edit user
     Given "Admin" creates following user using API
       | id    |
@@ -105,6 +119,9 @@ Feature: users management
     And "anna" logs out
 
 
+
+
+  @T505d84ac
   Scenario: assign user to groups
     Given "Admin" creates following user using API
       | id    |
@@ -130,6 +147,9 @@ Feature: users management
     And "Alice" logs out
 
 
+
+
+  @T3256829a
   Scenario: delete user
     Given "Admin" creates following users using API
       | id    |
@@ -167,6 +187,9 @@ Feature: users management
     And "Admin" logs out
 
 
+
+
+  @T81b0b045
   Scenario: admin creates user
     When "Admin" logs in
     And "Admin" opens the "admin-settings" app
@@ -184,6 +207,9 @@ Feature: users management
     And "Max" logs out
 
 
+
+
+  @T36a65a41
   Scenario: edit panel can be opened via quick action and context menu
     Given "Admin" creates following users using API
       | id    |

@@ -1,8 +1,13 @@
+
+@S0242886a
 Feature: Upload
   As a user
   I want to upload resources
   So that I can store them in owncloud
 
+
+
+  @Tfba39782
   Scenario: Upload resources in personal space
     Given "Admin" creates following user using API
       | id    |

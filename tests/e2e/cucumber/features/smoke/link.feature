@@ -1,5 +1,10 @@
+
+@S0ecc8620
 Feature: link
 
+
+
+  @T58352c9f
   Scenario: public link
     Given "Admin" creates following user using API
       | id    |
@@ -55,6 +60,9 @@ Feature: link
     And "Alice" logs out
 
 
+
+
+  @T432a056a
   Scenario: Quick link
     Given "Admin" creates following user using API
       | id    |
@@ -72,5 +80,4 @@ Feature: link
     And "Anonymous" downloads the following public link resources using the sidebar panel
       | resource  | type |
       | lorem.txt | file |
-    And "Anonymous" logs out
     And "Alice" logs out

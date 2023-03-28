@@ -1,3 +1,5 @@
+
+@Sb355308b
 Feature: share
 
   Background:
@@ -6,6 +8,9 @@ Feature: share
       | Alice |
       | Brian |
 
+
+
+  @T11a7f8cc
   Scenario: folder
     Given "Alice" creates the following folder in personal space using API
       | name                   |
@@ -76,6 +81,9 @@ Feature: share
     And "Brian" logs out
 
 
+
+
+  @T752d3139
   Scenario: file
     Given "Alice" logs in
     And "Alice" opens the "files" app

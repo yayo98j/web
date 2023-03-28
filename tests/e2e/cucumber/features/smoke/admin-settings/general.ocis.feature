@@ -1,5 +1,10 @@
+
+@S2f9d80c1
 Feature: general management
 
+
+
+  @T56c29c2f
   Scenario: logo can be changed in the admin settings
     When "Admin" logs in
     And "Admin" opens the "admin-settings" app

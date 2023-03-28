@@ -1,3 +1,5 @@
+
+@Sa244e5db
 Feature: Users can use web to organize tags
 
   Background:
@@ -6,6 +8,9 @@ Feature: Users can use web to organize tags
       | Alice |
       | Brian |
 
+
+
+  @T98951386
   Scenario: Tag management
     When "Alice" logs in
     And "Alice" opens the "files" app
@@ -33,6 +38,9 @@ Feature: Users can use web to organize tags
     And "Alice" logs out
 
 
+
+
+  @Tbb95d3f1
   Scenario: Tag search
     When "Alice" logs in
     And "Alice" opens the "files" app
@@ -53,6 +61,9 @@ Feature: Users can use web to organize tags
     And "Alice" logs out
 
 
+
+
+  @Td2a72a77
   Scenario: Tag sharing
     When "Alice" logs in
     And "Alice" opens the "files" app

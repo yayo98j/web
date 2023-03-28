@@ -1,5 +1,10 @@
+
+@S06485c9d
 Feature: spaces management
 
+
+
+  @T371f8a84
   Scenario: spaces can be managed in the admin settings via the context menu
     Given "Admin" creates following users using API
       | id    |
@@ -36,6 +41,9 @@ Feature: spaces management
     And "Brian" logs out
 
 
+
+
+  @T512b0355
   Scenario: multiple spaces can be managed at once in the admin settings via the batch actions
     Given "Admin" creates following user using API
       | id    |
@@ -91,6 +99,9 @@ Feature: spaces management
     And "Alice" logs out
 
 
+
+
+  @Tebbbdc0c
   Scenario: list members via sidebar
     Given "Admin" creates following users using API
       | id      |

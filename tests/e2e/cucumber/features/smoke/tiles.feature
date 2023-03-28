@@ -1,8 +1,13 @@
+
+@Sa530fad3
 Feature: Tiles
   As a user
   I want to view and navigate resources displayed as tiles
   So that I can identify them better
 
+
+
+  @T787e7c4a
   Scenario: Users can navigate web via tiles
     Given "Admin" creates following user using API
       | id    |

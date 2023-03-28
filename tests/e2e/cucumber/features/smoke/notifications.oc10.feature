@@ -1,3 +1,5 @@
+
+@S894613f2
 Feature: Notifications
   As a user
   I want to be notified
@@ -11,6 +13,9 @@ Feature: Notifications
     And "Admin" sets the default folder for received shares to "Shares"
     And "Admin" disables share auto accepting
 
+
+
+  @T0b009351
   Scenario: User should be able to read and dismiss notifications
     Given "Alice" creates the following folder in personal space using API
       | name             |

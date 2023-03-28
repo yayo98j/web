@@ -1,3 +1,5 @@
+
+@S74cdcea1
 Feature: Search
   As a user
   I want to search for resources
@@ -7,6 +9,9 @@ Feature: Search
     Given "Admin" sets the default folder for received shares to "Shares"
     And "Admin" disables share auto accepting
 
+
+
+  @T09f937a5
   Scenario: Search in personal spaces
     Given "Admin" creates following users using API
       | id    |

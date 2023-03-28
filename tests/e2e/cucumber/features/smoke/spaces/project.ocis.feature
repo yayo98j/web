@@ -1,5 +1,10 @@
+
+@Sdc48fcce
 Feature: spaces.personal
 
+
+
+  @T1afeb30b
   Scenario: unstructured collection of testable space interactions,
   once all needed features are there, split this into independent tests.
   contains following features:
