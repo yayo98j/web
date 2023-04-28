@@ -6,6 +6,7 @@ export class CustomTus extends Tus {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.opts.endpoint = file.meta.tusEndpoint
+      console.log('ENDPOINT', file.meta.tusEndpoint)
     }
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

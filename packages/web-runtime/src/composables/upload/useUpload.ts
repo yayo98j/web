@@ -104,7 +104,7 @@ export function useUpload(options: UploadOptions): UploadResult {
     return {
       isTusSupported,
       onBeforeRequest: (req) => {
-        req.setHeader('Authorization', unref(headers).Authorization)
+        // req.setHeader('Authorization', unref(headers).Authorization)
         req.setHeader('X-Request-ID', unref(headers)['X-Request-ID'])
         req.setHeader('Accept-Language', unref(headers)['Accept-Language'])
       },

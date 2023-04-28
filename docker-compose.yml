@@ -1,14 +1,14 @@
 services:
   ocis:
-    image: ${OCIS_IMAGE:-owncloud/ocis:latest}
+    image: butonic/ocis:dev@sha256:92a8d048051adb408f2b35ab533e2e053432c93e2af97a4afa604c85288bfaf6
     container_name: web_ocis
-    ports:
-      - 9200:9200
+    # ports:
+      # - 9200:9200
     environment:
       # OCIS
       OCIS_URL: ${OCIS_URL:-https://host.docker.internal:9200}
       OCIS_INSECURE: "${OCIS_INSECURE:-true}"
-      OCIS_LOG_LEVEL: ${OCIS_LOG_LEVEL:-error}
+      OCIS_LOG_LEVEL: ${OCIS_LOG_LEVEL:-debug}
       OCIS_LOG_PRETTY: "${OCIS_LOG_PRETTY:-true}"
       OCIS_LOG_COLOR: "${OCIS_LOG_COLOR:-true}"
       OCIS_SYSTEM_USER_ID: "${OCIS_SYSTEM_USER_ID:-some-system-user-id-000-000000000000}"
@@ -52,6 +52,11 @@ services:
 
       # PROXY
       PROXY_ENABLE_BASIC_AUTH: "${PROXY_ENABLE_BASIC_AUTH:-true}"
+      PROXY_TLS: "false"
+
+      OCIS_TRACING_ENABLED: "true"
+      OCIS_TRACING_TYPE: "jaeger"
+      OCIS_TRACING_ENDPOINT: "localhost:6831"
     volumes:
       - ./dev/docker/ocis.entrypoint.sh:/usr/bin/entrypoint
       - ./dev/docker/ocis.idp.config.yaml:/etc/ocis/idp.yaml
@@ -61,6 +66,10 @@ services:
     extra_hosts:
       - host.docker.internal:${DOCKER_HOST:-host-gateway}
     entrypoint: /usr/bin/entrypoint
+    labels:
+      traefik.enable: true
+      traefik.http.routers.ocis.rule: PathPrefix(`/`)
+      traefik.http.routers.ocis.entrypoints: websecure
 
   oc10:
     build:
@@ -167,15 +176,21 @@ services:
     extra_hosts:
       - host.docker.internal:${DOCKER_HOST:-host-gateway}
     environment:
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+
       COMPANION_DATADIR: /tmp/companion/
-      COMPANION_DOMAIN: https://host.docker.internal
+      COMPANION_DOMAIN: host.docker.internal:9200
+      COMPANION_PROTOCOL: https
+      COMPANION_PATH: /companion
+
+
     volumes:
       - uppy_companion_datadir:/tmp/companion/
     labels:
       traefik.enable: true
-      traefik.http.routers.companion.rule: PathPrefix(`/`)
+      traefik.http.routers.companion.rule: PathPrefix(`/companion`)
       traefik.http.routers.companion.entrypoints: websecure
-      # traefik.http.services.companion.loadbalancer.server.port: 3020
+      traefik.http.services.companion.loadbalancer.server.port: 3020
     # ports:
     #   - 3020:3020
 
@@ -203,10 +218,16 @@ services:
       traefik.http.middlewares.https_config.headers.stsSeconds: 63072000
       traefik.http.middlewares.https_config.headers.stsIncludeSubdomains: true
 
+      traefik.http.middlewares.https_config.headers.accesscontrolallowmethods: OPTIONS,HEAD,GET,PUT,POST,DELETE,PATCH
+      traefik.http.middlewares.https_config.headers.accesscontrolallowheaders: "*"
+      traefik.http.middlewares.https_config.headers.accesscontrolalloworiginlist: "*"
+      # traefik.http.middlewares.testheader.headers.accesscontrolmaxage=100"
+      # traefik.http.middlewares.testheader.headers.addvaryheader=true"
+
     ports:
       - "80:80"
       - "8090:8080"
-      - "443:443"
+      - "9200:443"
     volumes:
       - "./data_traefik/letsencrypt:/letsencrypt"
       - "./data_traefik/configs:/configs"

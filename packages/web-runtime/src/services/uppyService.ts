@@ -1,4 +1,6 @@
 import Uppy, { UppyFile } from '@uppy/core'
+import Dashboard from '@uppy/dashboard'
+import OneDrive from '@uppy/onedrive'
 import { TusOptions } from '@uppy/tus'
 import XHRUpload, { XHRUploadOptions } from '@uppy/xhr-upload'
 import { eventBus } from 'web-pkg/src/services/eventBus'
@@ -36,15 +38,23 @@ export class UppyService {
     this.uppy = new Uppy({
       autoProceed: true
     })
+      .use(Dashboard, { inline: true, target: '#uppy-dashboard' })
+      .use(OneDrive, {
+        target: Dashboard,
+        companionUrl: 'https://host.docker.internal:9200/companion'
+      })
+
     this.setUpEvents()
   }
 
   useTus({
+    headers,
     tusMaxChunkSize,
     tusHttpMethodOverride,
     tusExtension,
     onBeforeRequest
   }: {
+    headers: (foo: any) => uppyHeaders
     tusMaxChunkSize: number
     tusHttpMethodOverride: boolean
     tusExtension: string
@@ -53,12 +63,20 @@ export class UppyService {
     const chunkSize = tusMaxChunkSize || Infinity
     const uploadDataDuringCreation = tusExtension.includes('creation-with-upload')
 
+    const foo = headers({ data: { lastModified: 0 } })
+    console.log('useTus', foo)
     const tusPluginOptions = {
+      endpoint:
+        'https://host.docker.internal:9200/remote.php/dav/spaces/1284d238-aa92-42ce-bdc4-0b0000009157$some-admin-user-id-0000-000000000000',
+      headers: {
+        Authorization: foo.Authorization
+        // Foo: 'bar'
+      },
       chunkSize: chunkSize,
       removeFingerprintOnSuccess: true,
       overridePatchMethod: !!tusHttpMethodOverride,
       retryDelays: [0, 500, 1000],
-      uploadDataDuringCreation,
+      uploadDataDuringCreation: false,
       onBeforeRequest,
       onShouldRetry: (err, retryAttempt, options, next) => {
         // status code 5xx means the upload is gone on the server side
@@ -85,7 +103,8 @@ export class UppyService {
 
   useXhr({ headers, xhrTimeout }: { headers: () => uppyHeaders; xhrTimeout: number }) {
     const xhrPluginOptions: XHRUploadOptions = {
-      endpoint: '',
+      endpoint:
+        'https://host.docker.internal:9201/remote.php/dav/spaces/1284d238-aa92-42ce-bdc4-0b0000009157$some-admin-user-id-0000-000000000000/uppyUploadFile',
       method: 'put',
       headers,
       formData: false,
