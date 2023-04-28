@@ -162,5 +162,57 @@ services:
     extra_hosts:
       - host.docker.internal:${DOCKER_HOST:-host-gateway}
 
+  companion:
+    image: transloadit/companion:4.5.0
+    extra_hosts:
+      - host.docker.internal:${DOCKER_HOST:-host-gateway}
+    environment:
+      COMPANION_DATADIR: /tmp/companion/
+      COMPANION_DOMAIN: https://host.docker.internal
+    volumes:
+      - uppy_companion_datadir:/tmp/companion/
+    labels:
+      traefik.enable: true
+      traefik.http.routers.companion.rule: PathPrefix(`/`)
+      traefik.http.routers.companion.entrypoints: websecure
+      # traefik.http.services.companion.loadbalancer.server.port: 3020
+    # ports:
+    #   - 3020:3020
+
+  traefik:
+    image: traefik:v2.7.2
+    restart: unless-stopped
+    command:
+      - "--pilot.dashboard=false"
+      - "--log.level=DEBUG"
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.file.directory=/configs"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.middlewares=https_config@docker"
+      - "--entrypoints.websecure.http.tls.options=default"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.http_catchall.rule: HostRegexp(`{any:.+}`)
+      traefik.http.routers.http_catchall.entrypoints: web
+      traefik.http.routers.http_catchall.middlewares: https_config
+      traefik.http.middlewares.https_config.headers.sslRedirect: true
+      traefik.http.middlewares.https_config.headers.stsSeconds: 63072000
+      traefik.http.middlewares.https_config.headers.stsIncludeSubdomains: true
+
+    ports:
+      - "80:80"
+      - "8090:8080"
+      - "443:443"
+    volumes:
+      - "./data_traefik/letsencrypt:/letsencrypt"
+      - "./data_traefik/configs:/configs"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
 volumes:
   uploads:
+  uppy_companion_datadir:
+  traefik_letsencrypt:
