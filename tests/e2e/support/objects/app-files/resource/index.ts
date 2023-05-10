@@ -245,4 +245,8 @@ export class Resource {
     await checkThatFileVersionIsNotAvailable({ ...args, page: this.#page })
     await this.#page.goto(startUrl)
   }
+
+  async changePage(){
+
+  }
 }

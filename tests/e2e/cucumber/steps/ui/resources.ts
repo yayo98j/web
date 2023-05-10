@@ -520,7 +520,7 @@ When(
   }
 )
 
-When(
+Then(
   '{string} should not see the version of the file(s)',
   async function (this: World, stepUser: string, stepTable: DataTable): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
@@ -541,4 +541,14 @@ When(
       await resourceObject.checkThatFileVersionIsNotAvailable({ folder, files: fileInfo[folder] })
     }
   }
+)
+
+When(
+    '{string} navigates to the page {string} of personal space files view',
+    async function (this: World, stepUser: string, pageNumber:string) {
+        const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+        const resourceObject = new objects.applicationFiles.Resource({ page })
+        await resourceObject.changePage()
+
+    }
 )
