@@ -15,4 +15,9 @@ Feature: check files pagination in personal space
     And "Alice" logs in
     And "Alice" opens the "files" app
     When "Alice" navigates to the page "2" of personal space files view
-#    Then text "111 items with 7 B in total (56 file, 55 folders)" should be visible
+    Then "Alice" should see the text "111 items with 1 kB in total (56 files, 55 folders)" at the footer of the page
+    And "Alice" should see 10 resources in the personal space files view
+    When "Alice" enables the option to display the hidden file
+    Then "Alice" should see 11 resources in the personal space files view
+    When "Alice" changes the items per page to "500"
+    Then "Alice" should not see page numbers at the footer of the personal space page
