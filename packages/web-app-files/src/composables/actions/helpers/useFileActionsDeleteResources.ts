@@ -14,7 +14,10 @@ import {
   useClientService,
   useRouter,
   useStore,
-  useLoadingService
+  useLoadingService,
+  useRouteQuery,
+  queryItemAsString,
+  useRoute
 } from 'web-pkg/src/composables'
 import { useGettext } from 'vue3-gettext'
 import { ref } from 'vue'
@@ -22,6 +25,7 @@ import { ref } from 'vue'
 export const useFileActionsDeleteResources = ({ store }: { store?: Store<any> }) => {
   store = store || useStore()
   const router = useRouter()
+  const currentRoute = useRoute()
   const language = useGettext()
   const { $gettext, $ngettext, interpolate: $gettextInterpolate } = language
   const hasShareJail = useCapabilityShareJailEnabled()
@@ -33,6 +37,14 @@ export const useFileActionsDeleteResources = ({ store }: { store?: Store<any> })
   const queue = new PQueue({ concurrency: 4 })
   const deleteOps = []
   const resourcesToDelete = ref([])
+
+  const currentPageQuery = useRouteQuery('page')
+  const currentPage = computed(() => {
+    if (!unref(currentPageQuery)) {
+      return 1
+    }
+    return parseInt(queryItemAsString(unref(currentPageQuery)))
+  })
 
   const isInTrashbin = computed(() => {
     return isLocationTrashActive(router, 'files-trash-generic')
@@ -197,12 +209,20 @@ export const useFileActionsDeleteResources = ({ store }: { store?: Store<any> })
               unref(resourcesToDelete).length &&
               isSameResource(unref(resourcesToDelete)[0], store.getters['Files/currentFolder'])
             ) {
+              // current folder is being deleted
               return router.push(
                 createFileRouteOptions(space, {
                   path: dirname(unref(resourcesToDelete)[0].path),
                   fileId: unref(resourcesToDelete)[0].parentFolderId
                 })
               )
+            }
+
+            if (unref(currentPage) > 1) {
+              // reset pagniation to avoid empty file lists
+              return router.push({
+                query: { ...unref(currentRoute).query, page: '1' }
+              })
             }
           })
       },
